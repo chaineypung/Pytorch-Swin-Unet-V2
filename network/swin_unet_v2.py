@@ -119,7 +119,7 @@ class WindowAttention(nn.Module):
         self.register_buffer("log_relative_position_index", log_relative_position_index)
 
         # Swin v2, small meta network, Eq.(3)
-        self.cpb = Mlp_Relu(in_features=3,  # delta x, delta y
+        self.cpb = Mlp_Relu(in_features=2,  # delta x, delta y
                             hidden_features=256,  # hidden dims
                             out_features=self.num_heads,
                             dropout=0.0)
