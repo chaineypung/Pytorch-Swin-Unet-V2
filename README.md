@@ -12,7 +12,7 @@ You just need to download the **network** folder and replace the **network** fol
 </p>
 
 ## Reference
-```
+```bibtex
 @misc{cao2021swinunet,
       title={Swin-Unet: Unet-like Pure Transformer for Medical Image Segmentation}, 
       author={Hu Cao and Yueyue Wang and Joy Chen and Dongsheng Jiang and Xiaopeng Zhang and Qi Tian and Manning Wang},
