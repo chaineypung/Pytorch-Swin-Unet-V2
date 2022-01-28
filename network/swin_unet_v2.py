@@ -115,7 +115,8 @@ class WindowAttention(nn.Module):
         # self.register_buffer("relative_position_index", relative_position_index)
 
         # Swin v2, log-spaced coordinates, Eq.(4)
-        log_relative_position_index = torch.mul(torch.sign(relative_coords), torch.log(torch.abs(relative_coords) + 1))
+        # log_relative_position_index = torch.mul(torch.sign(relative_coords), torch.log(torch.abs(relative_coords) + 1))
+        log_relative_position_index = torch.sign(relative_coords) * torch.log(1. + relative_coords.abs())
         self.register_buffer("log_relative_position_index", log_relative_position_index)
 
         # Swin v2, small meta network, Eq.(3)
@@ -158,15 +159,17 @@ class WindowAttention(nn.Module):
 
         # Swin v2, Scaled cosine attention
         # q = q * self.scale
-        # qk = q @ k.transpose(-2, -1)  
+        # qk = q @ k.transpose(-2, -1)
         # q2 = torch.mul(q, q).sum(-1).sqrt().unsqueeze(3)
         # k2 = torch.mul(k, k).sum(-1).sqrt().unsqueeze(3)
         # attn = qk / torch.clip(q2 @ k2.transpose(-2, -1), min=1e-6)
         # attn = attn / torch.clip(self.tau[:, :N, :N].unsqueeze(0), min=0.01)
 
+        # Swin v2, Scaled cosine attention
         q = q * self.scale
-        attn = q @ k.transpose(-2, -1)  
-        attn = torch.cos(attn)
+        attn = torch.einsum("bhqd, bhkd -> bhqk", q, k) / torch.maximum(
+            torch.norm(q, dim=-1, keepdim=True) * torch.norm(k, dim=-1, keepdim=True).transpose(-2, -1),
+            torch.tensor(1e-06, device=q.device, dtype=q.dtype))
         attn = attn / torch.clip(self.tau[:, :N, :N].unsqueeze(0), min=0.01)
 
         # Swin v1
@@ -824,3 +827,14 @@ class SwinTransformerSys(nn.Module):
         flops += self.num_features * self.patches_resolution[0] * self.patches_resolution[1] // (2 ** self.num_layers)
         flops += self.num_features * self.num_classes
         return flops
+
+
+
+
+if __name__=='__main__':
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print('#### Test Model ###')
+    x = torch.rand(4, 3, 224, 224).to(device)
+    model = SwinTransformerSys().to(device)
+    y = model(x)
+    print(y.size())
