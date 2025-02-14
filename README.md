@@ -1,6 +1,6 @@
 # Swin Unet V2
 
-Swin Unet V2 is a modified version of Swin Unet [arxiv](https://arxiv.org/pdf/2111.09883) based on Swin Transfomer V2 [arxiv](https://arxiv.org/pdf/2103.14030.pdf).
+Swin Unet V2 is a modified version of Swin Unet [arxiv](https://arxiv.org/pdf/2103.14030.pdf) based on Swin Transfomer V2 [arxiv](https://arxiv.org/pdf/2111.09883).
 
 All configurations are the same as [Swin Unet](https://github.com/HuCaoFighting/Swin-Unet).
 
